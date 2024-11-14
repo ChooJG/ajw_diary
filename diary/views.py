@@ -6,3 +6,8 @@ from django.shortcuts import render
 def index(request):
     context = {}
     return render(request, 'diary/index.html', context)
+
+
+def list(request):
+    context = {}
+    return render(request, 'diary/list.html', context)
