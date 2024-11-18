@@ -1,44 +1,38 @@
 {% block content %}
-<div class="container mt-4">
-    <h2>새 일기 작성</h2>
-    
+<div class="diary-create container">
+    <h1>새 일기 작성</h1>
     <form method="post">
         {% csrf_token %}
-        
-        <div class="card mb-4">
-            <div class="card-body">
-                {% for field in form %}
-                <div class="mb-3">
-                    <label for="{{ field.id_for_label }}" class="form-label">{{ field.label }}</label>
-                    {{ field }}
-                    {% if field.errors %}
-                    <div class="text-danger">
-                        {{ field.errors }}
-                    </div>
-                    {% endif %}
-                </div>
-                {% endfor %}
-            </div>
+
+        <div class="form-group">
+            {{ form.diary_date.label_tag }}
+            {{ form.diary_date }}
         </div>
 
-        <div class="card mb-4">
-            <div class="card-header">
-                <h5 class="mb-0">이미지 추가 (최대 3개)</h5>
-            </div>
-            <div class="card-body">
-                {{ formset.management_form }}
-                {% for image_form in formset %}
-                <div class="mb-3">
-                    {{ image_form.as_p }}
-                </div>
-                {% endfor %}
-            </div>
+        <div class="form-group">
+            {{ form.mood.label_tag }}
+            {{ form.mood }}
         </div>
 
-        <div class="text-end">
-            <a href="{% url 'diary-list' %}" class="btn btn-secondary">취소</a>
-            <button type="submit" class="btn btn-primary">저장</button>
+        <div class="form-group">
+            {{ form.summary.label_tag }}
+            {{ form.summary }}
         </div>
+
+        <div class="form-group">
+            {{ form.content.label_tag }}
+            {{ form.content }}
+        </div>
+
+        <div class="form-group">
+            <label>이미지 URL</label>
+            {{ form.image_url_1 }}
+            {{ form.image_url_2 }}
+            {{ form.image_url_3 }}
+        </div>
+
+        <button type="submit" class="btn btn-primary">저장</button>
+        <a href="{% url 'diary-list' %}" class="btn btn-secondary">취소</a>
     </form>
 </div>
 {% endblock %}

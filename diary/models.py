@@ -26,22 +26,11 @@ class Diary(models.Model):
     # 날짜 (사용자 지정)
     diary_date = models.DateField()
 
+    # 이미지 URL에 max_length 추가 (300자로 제한)
+    image_url_1 = models.CharField(max_length=300, blank=True, null=True)
+    image_url_2 = models.CharField(max_length=300, blank=True, null=True)
+    image_url_3 = models.CharField(max_length=300, blank=True, null=True)
+
     # 생성 및 수정 시간
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
-
-    # 이미지 개수가 3을 초과하는지 확인하는 메서드
-    def clean(self):
-        if self.images.count() > 3:
-            raise ValidationError("이미지는 최대 3개까지만 등록할 수 있습니다.")
-
-
-class DiaryImage(models.Model):
-    diary = models.ForeignKey(
-        Diary,
-        on_delete=models.CASCADE,
-        related_name='images'
-    )
-
-    # 이미지 링크
-    image_url = models.URLField()

@@ -1,54 +1,24 @@
 {% block content %}
-<div class="container mt-4">
-    <h2>일기 목록</h2>
-    
-    <div class="row">
+<div class="diary-list container">
+    <h1>일기 목록</h1>
+    <a href="{% url 'diary-create' %}" class="btn btn-primary mb-3">새 일기 작성</a>
+
+    {% if diaries %}
         {% for diary in diaries %}
-        <div class="col-md-12 mb-3">
-            <div class="card">
-                <div class="card-body">
-                    <h5 class="card-title">{{ diary.diary_date|date:"Y년 m월 d일" }}</h5>
-                    <p class="card-text">{{ diary.summary }}</p>
-                    <div class="d-flex justify-content-between align-items-center">
-                        <span class="badge bg-primary">{{ diary.get_mood_display }}</span>
-                        <a href="{% url 'diary-read' %}?id={{ diary.id }}" class="btn btn-sm btn-outline-primary">자세히 보기</a>
-                    </div>
-                </div>
+        <hr>
+        <div class="card mb-3">
+            <div class="card-header">
+                {{ diary.diary_date }} - {{ diary.get_mood_display }}
+            </div>
+            <div class="card-body">
+                <h5 class="card-title">{{ diary.summary }}</h5>
+                <p class="card-text">{{ diary.content|truncatechars:100 }}</p>
+                <a href="{% url 'diary-read' diary.id %}" class="btn btn-sm btn-outline-primary">자세히 보기</a>
             </div>
         </div>
-        {% empty %}
-        <div class="col-12 text-center">
-            <p>작성된 일기가 없습니다.</p>
-        </div>
         {% endfor %}
-    </div>
-
-    {% if diaries.has_other_pages %}
-    <nav aria-label="Page navigation" class="mt-4">
-        <ul class="pagination justify-content-center">
-            {% if diaries.has_previous %}
-            <li class="page-item">
-                <a class="page-link" href="?page={{ diaries.previous_page_number }}">이전</a>
-            </li>
-            {% endif %}
-
-            {% for i in diaries.paginator.page_range %}
-            <li class="page-item {% if diaries.number == i %}active{% endif %}">
-                <a class="page-link" href="?page={{ i }}">{{ i }}</a>
-            </li>
-            {% endfor %}
-
-            {% if diaries.has_next %}
-            <li class="page-item">
-                <a class="page-link" href="?page={{ diaries.next_page_number }}">다음</a>
-            </li>
-            {% endif %}
-        </ul>
-    </nav>
+    {% else %}
+        <p>작성된 일기가 없습니다.</p>
     {% endif %}
-
-    <div class="text-end mt-3">
-        <a href="{% url 'diary-create' %}" class="btn btn-primary">새 일기 작성</a>
-    </div>
 </div>
 {% endblock %}

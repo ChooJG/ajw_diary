@@ -1,9 +1,9 @@
 from django.shortcuts import render, redirect
-from .forms import DiaryForm, DiaryImageFormSet
+from .forms import DiaryForm
 
 from django.shortcuts import render, get_object_or_404
 from django.core.paginator import Paginator
-from .models import Diary, DiaryImage
+from .models import Diary
 
 # Create your views here.
 
@@ -14,33 +14,19 @@ def index(request):
 
 
 def list(request):
-    # 최신 일기가 먼저 보이도록 정렬
-    diary_list = Diary.objects.all().order_by('-diary_date')
-
-    # 페이지네이션 (한 페이지당 10개의 일기)
-    paginator = Paginator(diary_list, 10)
-    page = request.GET.get('page', 1)
-    diaries = paginator.get_page(page)
-
+    # 최신 일기부터 역순으로 가져오기
+    diaries = Diary.objects.order_by('-diary_date')
     context = {
-        'diaries': diaries,
+        'diaries': diaries
     }
     return render(request, 'diary/list.html', context)
 
 
-def read(request):
-    # URL 파라미터로 전달된 일기 ID
-    diary_id = request.GET.get('id')
-
-    # 해당 ID의 일기가 없으면 404 에러
+def read(request, diary_id):
+    # 특정 ID의 일기 상세 조회
     diary = get_object_or_404(Diary, id=diary_id)
-
-    # 일기에 연결된 이미지들 가져오기
-    images = diary.images.all()
-
     context = {
-        'diary': diary,
-        'images': images,
+        'diary': diary
     }
     return render(request, 'diary/read.html', context)
 
@@ -48,24 +34,14 @@ def read(request):
 def create(request):
     if request.method == 'POST':
         form = DiaryForm(request.POST)
-        formset = DiaryImageFormSet(request.POST, prefix='images')
-
         if form.is_valid():
-            # 먼저 일기를 저장
-            diary = form.save()
-
-            # 저장된 일기를 formset의 instance로 설정하고 저장
-            formset.instance = diary
-            if formset.is_valid():
-                formset.save()
-                return redirect('diary-read', pk=diary.pk)
+            form.save()
+            return redirect('diary-list')  # 목록 페이지로 리다이렉트
     else:
         form = DiaryForm()
-        formset = DiaryImageFormSet(prefix='images')
 
     context = {
-        'form': form,
-        'formset': formset
+        'form': form
     }
     return render(request, 'diary/create.html', context)
 
