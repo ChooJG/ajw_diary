@@ -1,0 +1,11 @@
+{% block content %}
+<div class="diary-delete container">
+    <h1>일기 삭제</h1>
+    <p>정말로 이 일기를 삭제하시겠습니까?</p>
+    <form method="post">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-danger">삭제</button>
+        <a href="{% url 'diary-list' %}" class="btn btn-secondary">취소</a>
+    </form>
+</div>
+{% endblock %}

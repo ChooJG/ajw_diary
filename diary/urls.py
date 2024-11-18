@@ -6,7 +6,7 @@ urlpatterns = [
     path('list', views.list, name="diary-list"),           # 일기 목록 조회
     path("read/<int:diary_id>", views.read, name="diary-read"),           # 일기 조회
     path('create', views.create, name="diary-create"),     # 일기 작성
-    path('update', views.update, name="diary-update"),     # 수정
-    path('delete', views.delete, name="diary-delete")      # 삭제
+    path('update/<int:diary_id>/', views.update, name="diary-update"),     # 수정
+    path('delete/<int:diary_id>/', views.delete, name="diary-delete")      # 삭제
 
 ]

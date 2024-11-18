@@ -1,10 +1,11 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-</head>
-<body>
-
-</body>
-</html>
+{% block content %}
+<div class="diary-update container">
+    <h1>일기 수정</h1>
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit" class="btn btn-primary">저장</button>
+        <a href="{% url 'diary-list' %}" class="btn btn-secondary">취소</a>
+    </form>
+</div>
+{% endblock %}

@@ -46,11 +46,32 @@ def create(request):
     return render(request, 'diary/create.html', context)
 
 
-def update(request):
-    context = {}
+def update(request, diary_id):
+    diary = get_object_or_404(Diary, id=diary_id)
+
+    if request.method == 'POST':
+        form = DiaryForm(request.POST, instance=diary)
+        if form.is_valid():
+            form.save()
+            return redirect('diary-list')
+    else:
+        form = DiaryForm(instance=diary)
+
+    context = {
+        'form': form,
+        'diary': diary
+    }
     return render(request, 'diary/update.html', context)
 
 
-def delete(request):
-    context = {}
+def delete(request, diary_id):
+    diary = get_object_or_404(Diary, id=diary_id)
+
+    if request.method == 'POST':
+        diary.delete()
+        return redirect('diary-list')
+
+    context = {
+        'diary': diary
+    }
     return render(request, 'diary/delete.html', context)
