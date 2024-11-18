@@ -1,5 +1,7 @@
 from django.shortcuts import render, redirect
 from .forms import DiaryForm
+import openai
+from django.http import JsonResponse
 
 from django.shortcuts import render, get_object_or_404
 from django.core.paginator import Paginator
@@ -75,3 +77,32 @@ def delete(request, diary_id):
         'diary': diary
     }
     return render(request, 'diary/delete.html', context)
+
+
+def check_spelling(request, diary_id):
+    # 특정 일기 가져오기
+    diary = get_object_or_404(Diary, id=diary_id)
+
+    try:
+        # OpenAI API 호출 (실제 API 키 필요)
+        response = openai.ChatCompletion.create(
+            model="gpt-3.5-turbo",
+            messages=[
+                {"role": "system",
+                 "content": "You are a helpful assistant that corrects Korean text for spelling and grammar."},
+                {"role": "user", "content": f"아래 텍스트의 오타를 수정해주세요:\n\n{diary.content}"}
+            ]
+        )
+
+        # 수정된 텍스트 추출
+        corrected_text = response.choices[0].message['content'].strip()
+
+        return JsonResponse({
+            'original_text': diary.content,
+            'corrected_text': corrected_text
+        })
+
+    except Exception as e:
+        return JsonResponse({
+            'error': str(e)
+        }, status=500)
