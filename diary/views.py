@@ -1,7 +1,8 @@
 from django.shortcuts import render, redirect
 from .forms import DiaryForm
-import openai
+from openai import OpenAI
 from django.http import JsonResponse
+from django.conf import settings
 
 from django.shortcuts import render, get_object_or_404
 from django.core.paginator import Paginator
@@ -84,23 +85,44 @@ def check_spelling(request, diary_id):
     diary = get_object_or_404(Diary, id=diary_id)
 
     try:
-        # OpenAI API 호출 (실제 API 키 필요)
-        response = openai.ChatCompletion.create(
-            model="gpt-3.5-turbo",
+        client = OpenAI(
+            api_key=settings.OPENAI_API_KEY
+        )
+        
+        completion = client.chat.completions.create(
+            model="gpt-4o-mini",
             messages=[
-                {"role": "system",
-                 "content": "You are a helpful assistant that corrects Korean text for spelling and grammar."},
-                {"role": "user", "content": f"아래 텍스트의 오타를 수정해주세요:\n\n{diary.content}"}
+                {
+                    "role": "system",
+                    "content": """당신은 한국어 맞춤법과 문법을 정확하게 교정하는 전문가입니다. 다음 규칙을 따라 교정해주세요:
+
+        1. 맞춤법 오류를 수정합니다
+        2. 띄어쓰기 오류를 수정합니다
+        3. 적절한 문장 부호를 사용합니다
+        4. 문법적으로 올바른 문장으로 수정합니다
+        5. 잘못 작성된 글자나 단어를 문맥에 따라 올바르게 수정합니다
+        6. 원문의 의미를 최대한 유지합니다
+        7. 불필요한 설명이나 코멘트 없이 수정된 텍스트만 반환합니다
+
+        수정할 내용이 없다면 원본 텍스트를 그대로 반환해주세요."""
+                },
+                {
+                    "role": "user",
+                    "content": f"{diary.content}"  # 검사할 텍스트
+                }
             ]
         )
 
         # 수정된 텍스트 추출
-        corrected_text = response.choices[0].message['content'].strip()
+        corrected_text = completion.choices[0].message.content
 
-        return JsonResponse({
+        # 딕셔너리로 필요한 데이터만 추출하여 반환
+        response_data = {
             'original_text': diary.content,
-            'corrected_text': corrected_text
-        })
+            'corrected_text': str(corrected_text)  # 명시적으로 문자열로 변환
+        }
+
+        return JsonResponse(response_data, safe=False)
 
     except Exception as e:
         return JsonResponse({
