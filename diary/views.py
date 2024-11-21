@@ -47,17 +47,13 @@ def read(request, diary_id):
 
 def create(request):
     if request.method == 'POST':
-        form = DiaryForm(request.POST)
+        form = DiaryForm(request.POST, request.FILES)  # 이미지 파일 처리 추가
         if form.is_valid():
             form.save()
-            return redirect('diary-list')  # 목록 페이지로 리다이렉트
+            return redirect('diary-list')
     else:
         form = DiaryForm()
-
-    context = {
-        'form': form
-    }
-    return render(request, 'diary/create.html', context)
+    return render(request, 'diary/create.html', {'form': form})
 
 
 def update(request, diary_id):

@@ -27,6 +27,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-cn=p)ia4w)jclwoe4a+u+apbzjr05f1x)rx%quywj&**(tb@6$'
 
 # SECURITY WARNING: don't run with debug turned on in production!
+# 프로덕션 환경에서는 안됨
 DEBUG = True
 
 ALLOWED_HOSTS = []
@@ -122,7 +123,13 @@ OPENAI_API_KEY = os.getenv('OPENAI_API_KEY')
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.1/howto/static-files/
 
-STATIC_URL = 'static/'
+MEDIA_URL = '/ajw_diary/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'ajw_diary/media')
+
+STATIC_URL = '/ajw_diary/static/'
+STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]
+
+
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field

@@ -5,7 +5,7 @@ from .models import Diary
 class DiaryForm(forms.ModelForm):
     class Meta:
         model = Diary
-        fields = ['content', 'summary', 'mood', 'diary_date', 'image_url_1', 'image_url_2', 'image_url_3']
+        fields = ['diary_date', 'mood', 'summary', 'content', 'image_1', 'image_2', 'image_3']
         widgets = {
             'diary_date': forms.DateInput(attrs={'type': 'date'}),
             'content': forms.Textarea(attrs={'rows': 4, 'maxlength': 700}),
@@ -17,8 +17,8 @@ class DiaryForm(forms.ModelForm):
             'summary': '오늘의 한줄평',
             'mood': '오늘의 기분',
             'diary_date': '날짜',
-            'image_url_1': '이미지 1',
-            'image_url_2': '이미지 2',
-            'image_url_3': '이미지 3'
+            'image_1': '이미지 1',
+            'image_2': '이미지 2',
+            'image_3': '이미지 3'
         }
 

@@ -1,6 +1,17 @@
 from django.db import models
-from django.core.validators import MaxLengthValidator
-from django.core.exceptions import ValidationError
+import os
+import uuid
+from django.utils.text import slugify
+
+
+def upload_to(instance, filename):
+    # 파일 확장자 추출
+    ext = filename.split('.')[-1]
+
+    # 한글 파일 이름을 slugify 처리 또는 UUID 사용
+    filename = f"{uuid.uuid4()}.{ext}"
+
+    return os.path.join('diary', filename)
 
 
 class Diary(models.Model):
@@ -27,9 +38,9 @@ class Diary(models.Model):
     diary_date = models.DateField()
 
     # 이미지 URL에 max_length 추가 (300자로 제한)
-    image_url_1 = models.CharField(max_length=300, blank=True, null=True)
-    image_url_2 = models.CharField(max_length=300, blank=True, null=True)
-    image_url_3 = models.CharField(max_length=300, blank=True, null=True)
+    image_1 = models.ImageField(upload_to=upload_to, blank=True, null=True)
+    image_2 = models.ImageField(upload_to=upload_to, blank=True, null=True)
+    image_3 = models.ImageField(upload_to=upload_to, blank=True, null=True)
 
     # 생성 및 수정 시간
     created_at = models.DateTimeField(auto_now_add=True)
