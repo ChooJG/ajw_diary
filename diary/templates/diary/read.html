@@ -17,6 +17,9 @@
                 <strong>날짜:</strong> {{ diary.diary_date }}
                 <strong class="ms-3">기분:</strong> {{ diary.get_mood_display }}
             </div>
+            <button id="generate-wordcloud-btn" class="btn btn-sm btn-warning" data-diary-id="{{ diary.id }}">
+                워드클라우드 생성
+            </button>
             <button id="check-spelling-btn" class="btn btn-sm btn-info" data-diary-id="{{ diary.id }}">
                 오타 확인
             </button>
@@ -63,6 +66,23 @@
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">닫기</button>
                     <button id="apply-correction-btn" type="button" class="btn btn-primary">적용</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- 워드클라우드 모달 -->
+    <div class="modal fade" id="wordcloudModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">워드클라우드</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body text-center">
+                    <img id="wordcloud-image" src="" alt="워드클라우드" class="img-fluid">
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">닫기</button>
                 </div>
             </div>
         </div>
@@ -118,6 +138,31 @@ $(document).ready(function() {
             },
             error: function(xhr) {
                 alert('수정 내용을 적용하는 중 오류가 발생했습니다: ' + xhr.responseJSON.error);
+            }
+        });
+    });
+});
+
+    // 워드 클라우드 버튼
+    $(document).ready(function() {
+    var wordcloudModal = new bootstrap.Modal(document.getElementById('wordcloudModal'));
+
+    // 워드클라우드 버튼 클릭
+    $('#generate-wordcloud-btn').on('click', function() {
+        var diaryId = $(this).data('diary-id');
+
+        // 워드클라우드 생성 요청
+        $.ajax({
+            url: `/diary/generate-wordcloud/${diaryId}/`,
+            method: 'GET',
+            success: function(response) {
+                // 이미지 URL을 모달에 설정
+                var imageUrl = `/diary/generate-wordcloud/${diaryId}/`;
+                $('#wordcloud-image').attr('src', imageUrl);
+                wordcloudModal.show();
+            },
+            error: function(xhr) {
+                alert('워드클라우드를 생성하는 중 오류가 발생했습니다: ' + xhr.responseJSON.error);
             }
         });
     });

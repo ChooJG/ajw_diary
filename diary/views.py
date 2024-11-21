@@ -4,11 +4,19 @@ from django.views.decorators.http import require_POST
 
 from .forms import DiaryForm
 from openai import OpenAI
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponse
 from django.conf import settings
 
 from django.shortcuts import render, get_object_or_404
 from django.core.paginator import Paginator
+from .models import Diary
+
+import matplotlib
+matplotlib.use('Agg')  # 비-GUI 백엔드 설정
+
+from wordcloud import WordCloud
+import matplotlib.pyplot as plt
+from io import BytesIO
 from .models import Diary
 
 # Create your views here.
@@ -147,3 +155,36 @@ def apply_correction(request, diary_id):
     diary.save()
 
     return JsonResponse({'message': '수정 내용이 저장되었습니다.'})
+
+
+# 워드 클라우드 추가
+def generate_wordcloud(request, diary_id):
+    diary = get_object_or_404(Diary, id=diary_id)
+    text = diary.content
+
+    if not text.strip():
+        return JsonResponse({'error': '일기 내용이 비어 있습니다.'}, status=400)
+
+    # 폰트 경로 설정 (Windows, Linux, Mac에 따라 경로 조정)
+    # 배포 환경에서는 변경 필요
+    font_path = "C:/Windows/Fonts/malgun.ttf"  # Windows 예시
+
+    # 워드클라우드 생성
+    wordcloud = WordCloud(
+        font_path=font_path,
+        width=800, height=400,
+        background_color='white',
+        colormap='viridis'
+    ).generate(text)
+
+    # 이미지를 메모리 버퍼에 저장
+    buffer = BytesIO()
+    plt.figure(figsize=(10, 5))
+    plt.imshow(wordcloud, interpolation="bilinear")
+    plt.axis("off")
+    plt.savefig(buffer, format='png')
+    plt.close()
+    buffer.seek(0)
+
+    # 응답으로 이미지 반환
+    return HttpResponse(buffer, content_type='image/png')
