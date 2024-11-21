@@ -1,4 +1,7 @@
 from django.shortcuts import render, redirect
+from django.views.decorators.csrf import csrf_exempt
+from django.views.decorators.http import require_POST
+
 from .forms import DiaryForm
 from openai import OpenAI
 from django.http import JsonResponse
@@ -128,3 +131,19 @@ def check_spelling(request, diary_id):
         return JsonResponse({
             'error': str(e)
         }, status=500)
+
+
+# 오타 수정된 부분 반영
+@csrf_exempt
+@require_POST
+def apply_correction(request, diary_id):
+    diary = get_object_or_404(Diary, id=diary_id)
+    corrected_text = request.POST.get('corrected_text', '').strip()
+
+    if not corrected_text:
+        return JsonResponse({'error': '수정된 텍스트가 없습니다.'}, status=400)
+
+    diary.content = corrected_text
+    diary.save()
+
+    return JsonResponse({'message': '수정 내용이 저장되었습니다.'})

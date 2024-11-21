@@ -11,4 +11,7 @@ urlpatterns = [
 
     # 오타 검사
     path('check-spelling/<int:diary_id>/', views.check_spelling, name='check-spelling'),
+    # 오타 수정 적용
+    path('apply-correction/<int:diary_id>/', views.apply_correction, name='apply-correction'),
+
 ]
