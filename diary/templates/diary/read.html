@@ -32,7 +32,7 @@
             {% if diary.image_1 or diary.image_2 or diary.image_3 %}
             <div class="diary-images mt-3 d-flex flex-wrap">
                 {% if diary.image_1 %}
-                <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRQjJeOH7Xe9xT4Z33XpeTGeEJHhmI9tdm5lw&s" alt="Image 1" class="img-fluid me-2" style="max-width: 200px;">
+                <img src="{{ diary.image_1.url }}" alt="Image 1" class="img-fluid me-2" style="max-width: 200px;">
                 {% endif %}
                 {% if diary.image_2 %}
                 <img src="{{ diary.image_2.url }}" alt="Image 2" class="img-fluid me-2" style="max-width: 200px;">

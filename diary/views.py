@@ -42,6 +42,7 @@ def read(request, diary_id):
     context = {
         'diary': diary
     }
+    print("경로 : " + diary.image_1.url)
     return render(request, 'diary/read.html', context)
 
 

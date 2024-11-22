@@ -20,6 +20,3 @@ urlpatterns = [
     # 워드클라우드 추가
     path('generate-wordcloud/<int:diary_id>/', views.generate_wordcloud, name='generate-wordcloud'),
 ]
-
-# 파일 업로드 URL 추가
-urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
