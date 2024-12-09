@@ -30,7 +30,7 @@ SECRET_KEY = 'django-insecure-cn=p)ia4w)jclwoe4a+u+apbzjr05f1x)rx%quywj&**(tb@6$
 # 프로덕션 환경에서는 안됨
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ["15.152.126.237", "ajwnote.shop"]
 
 
 # Application definition
@@ -128,10 +128,11 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 STATIC_URL = '/static/'
 STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]
-
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
