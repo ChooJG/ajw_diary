@@ -18,5 +18,5 @@ urlpatterns = [
     path('apply-correction/<int:diary_id>/', views.apply_correction, name='apply-correction'),
 
     # 워드클라우드 추가
-    path('generate-wordcloud/<int:diary_id>/', views.generate_wordcloud, name='generate-wordcloud'),
+    path('generate-wordcloud/', views.generate_wordcloud, name='generate-wordcloud'),
 ]

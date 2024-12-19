@@ -1,6 +1,7 @@
 from django.shortcuts import render, redirect
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_POST
+from django.core.paginator import Paginator
 
 from .forms import DiaryForm
 from openai import OpenAI
@@ -8,7 +9,6 @@ from django.http import JsonResponse, HttpResponse
 from django.conf import settings
 
 from django.shortcuts import render, get_object_or_404
-from django.core.paginator import Paginator
 from .models import Diary
 
 import matplotlib
@@ -29,9 +29,15 @@ def index(request):
 
 def list(request):
     # 최신 일기부터 역순으로 가져오기
-    diaries = Diary.objects.order_by('-diary_date')
+    diary_list = Diary.objects.order_by('-diary_date')
+
+    # 페이징 처리: 한 페이지에 5개의 일기 표시
+    paginator = Paginator(diary_list, 5)
+    page_number = request.GET.get('page')  # 현재 페이지 번호 가져오기
+    page_obj = paginator.get_page(page_number)
+
     context = {
-        'diaries': diaries
+        'page_obj': page_obj
     }
     return render(request, 'diary/list.html', context)
 
@@ -125,6 +131,7 @@ def check_spelling(request, diary_id):
 
         # 딕셔너리로 필요한 데이터만 추출하여 반환
         response_data = {
+            'success': True,
             'original_text': diary.content,
             'corrected_text': str(corrected_text)  # 명시적으로 문자열로 변환
         }
@@ -154,9 +161,11 @@ def apply_correction(request, diary_id):
 
 
 # 워드 클라우드 추가
-def generate_wordcloud(request, diary_id):
-    diary = get_object_or_404(Diary, id=diary_id)
-    text = diary.content
+def generate_wordcloud(request):
+    all_diaries = Diary.objects.all()
+
+    # 모든 일기의 내용을 합치기
+    text = " ".join([diary.content for diary in all_diaries if diary.content.strip()])
 
     if not text.strip():
         return JsonResponse({'error': '일기 내용이 비어 있습니다.'}, status=400)

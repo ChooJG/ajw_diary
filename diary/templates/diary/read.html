@@ -2,65 +2,295 @@
 
 {% block title %}일기 상세{% endblock %}
 
-{% block content %}
-<div class="diary-detail">
-    <h1>일기 상세</h1>
-    <div>
-        <div>
-            <div>
-                <strong>날짜:</strong> {{ diary.diary_date }}
-                <strong>기분:</strong> {{ diary.get_mood_display }}
-            </div>
-            <button id="check-spelling-btn" data-diary-id="{{ diary.id }}">오타 확인</button>
-        </div>
-        <div>
-            <h5>{{ diary.summary }}</h5>
-            <p id="diary-content">{{ diary.content }}</p>
 
-            {% if diary.image_1 or diary.image_2 or diary.image_3 %}
-            <div class="diary-images">
-                {% if diary.image_1 %}
-                <img src="{{ diary.image_1.url }}" alt="Image 1" style="max-width: 200px;">
-                {% endif %}
-                {% if diary.image_2 %}
-                <img src="{{ diary.image_2.url }}" alt="Image 2" style="max-width: 200px;">
-                {% endif %}
-                {% if diary.image_3 %}
-                <img src="{{ diary.image_3.url }}" alt="Image 3" style="max-width: 200px;">
-                {% endif %}
-            </div>
+
+{% block content %}
+<style>
+    .diary-detail {
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 20px;
+        background-color: #f9f9f9;
+        border-radius: 10px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    .diary-detail h1 {
+        text-align: center;
+        color: #6f42c1;
+        margin-bottom: 20px;
+    }
+
+    .diary-detail .info {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px;
+    }
+
+    .diary-detail .info strong {
+        font-size: 16px;
+        margin-right: 10px;
+    }
+
+    .diary-detail button {
+        padding: 10px 15px;
+        font-size: 16px;
+        color: #fff;
+        background-color: #6f42c1;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        transition: background-color 0.3s;
+    }
+
+    .diary-detail button:hover {
+        background-color: #9b5de5;
+    }
+
+    .diary-detail .diary-images {
+        display: flex;
+        gap: 10px;
+        margin-top: 20px;
+    }
+
+    .diary-detail .diary-images img {
+        border-radius: 5px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        max-width: 200px;
+        height: auto;
+    }
+
+    .diary-detail .actions {
+        display: flex;
+        justify-content: space-between;
+        margin-top: 20px;
+    }
+
+    .diary-detail .actions a {
+        font-size: 16px;
+        color: #6f42c1;
+        text-decoration: none;
+        padding: 10px 15px;
+        border: 1px solid #6f42c1;
+        border-radius: 5px;
+        transition: background-color 0.3s, color 0.3s;
+    }
+
+    .diary-detail .actions a:hover {
+        background-color: #6f42c1;
+        color: #fff;
+    }
+
+     #spellingModalOverlay {
+        display: none; /* 초기 상태는 숨김 */
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.5); /* 반투명 검정 배경 */
+        z-index: 999; /* 모달보다 낮아야 함 */
+    }
+
+    /* 모달 스타일 */
+    #spellingModal {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background-color: #fff;
+        border-radius: 10px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        width: 90%;
+        max-width: 600px;
+        padding: 20px;
+        z-index: 1000; /* 모달이 오버레이보다 위에 위치 */
+    }
+
+    .modal-content {
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between;
+        gap: 20px;
+    }
+
+    .modal-content h5 {
+        text-align: center;
+        color: #6f42c1;
+        margin-bottom: 10px;
+        width: 100%;
+    }
+
+    .modal-column {
+        width: 48%;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .modal-column h6 {
+        font-size: 16px;
+        color: #333;
+    }
+
+    .modal-column p {
+        padding: 10px;
+        background-color: #f9f9f9;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        min-height: 100px;
+        white-space: pre-wrap;
+        overflow-wrap: break-word;
+    }
+
+    .modal-actions {
+        display: flex;
+        justify-content: space-between;
+        margin-top: 20px;
+    }
+
+    .modal-actions button {
+        padding: 10px 20px;
+        font-size: 16px;
+        color: #fff;
+        background-color: #6f42c1;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        transition: background-color 0.3s;
+    }
+
+    .modal-actions button:hover {
+        background-color: #9b5de5;
+    }
+</style>
+
+<div class="diary-detail">
+    {% csrf_token %}
+    <meta name="csrf-token" content="{{ csrf_token }}">
+    <h1>일기 상세</h1>
+    <div class="info">
+        <div>
+            <strong>날짜:</strong> {{ diary.diary_date }}
+            <strong>기분:</strong> {{ diary.get_mood_display }}
+        </div>
+        <button id="check-spelling-btn" data-diary-id="{{ diary.id }}">오타 확인</button>
+    </div>
+    <div>
+        <h5>{{ diary.summary }}</h5>
+        <p id="diary-content">{{ diary.content }}</p>
+
+        {% if diary.image_1 or diary.image_2 or diary.image_3 %}
+        <div class="diary-images">
+            {% if diary.image_1 %}
+            <img src="{{ diary.image_1.url }}" alt="Image 1">
+            {% endif %}
+            {% if diary.image_2 %}
+            <img src="{{ diary.image_2.url }}" alt="Image 2">
+            {% endif %}
+            {% if diary.image_3 %}
+            <img src="{{ diary.image_3.url }}" alt="Image 3">
             {% endif %}
         </div>
-        <div>
-            <a href="{% url 'diary-list' %}">목록으로</a>
-            <a href="{% url 'diary-delete' diary.id %}">삭제</a>
-        </div>
+        {% endif %}
+    </div>
+    <div class="actions">
+        <a href="{% url 'diary-list' %}">목록으로</a>
+        <a href="{% url 'diary-delete' diary.id %}">삭제</a>
     </div>
 
     <!-- 오타 확인 모달 -->
-    <div id="spellingModal">
-        <div>
-            <div>
-                <h5>오타 수정 결과</h5>
-                <button type="button" id="close-modal-btn">닫기</button>
-            </div>
-            <div>
-                <div>
-                    <div>
-                        <h6>원본 텍스트:</h6>
-                        <p id="original-text"></p>
-                    </div>
-                    <div>
-                        <h6>수정된 텍스트:</h6>
-                        <p id="corrected-text"></p>
-                    </div>
+    <div id="spellingModalOverlay">
+        <div id="spellingModal">
+            <h5>오타 수정 결과</h5>
+            <div class="modal-content">
+                <div class="modal-column">
+                    <h6>원본 텍스트:</h6>
+                    <p id="original-text"></p>
+                </div>
+                <div class="modal-column">
+                    <h6>수정된 텍스트:</h6>
+                    <p id="corrected-text"></p>
                 </div>
             </div>
-            <div>
+            <div class="modal-actions">
                 <button id="close-modal-btn" type="button">닫기</button>
-                <button id="apply-correction-btn" type="button">적용</button>
+<!--                <button id="apply-correction-btn" type="button">수정 내용 적용</button>-->
             </div>
         </div>
     </div>
 </div>
+
+<script>
+    document.getElementById("check-spelling-btn").addEventListener("click", function () {
+        const diaryId = this.dataset.diaryId; // 버튼에 설정된 데이터 속성 값 가져오기
+        const url = `/check-spelling/${diaryId}/`; // URL 생성
+
+        fetch(url, {
+            method: "GET",
+            headers: {
+                "X-Requested-With": "XMLHttpRequest" // AJAX 요청 표시
+            }
+        })
+        .then(response => response.json()) // 응답 JSON 처리
+        .then(data => {
+            // 모달에 데이터 업데이트
+            document.getElementById("original-text").innerText = data.original_text;
+            document.getElementById("corrected-text").innerText = data.corrected_text;
+
+            // 모달과 오버레이 표시
+            document.getElementById("spellingModalOverlay").style.display = "block";
+        })
+        .catch(error => {
+            console.error("오타 확인 요청 실패:", error);
+            alert("요청 실패");
+        });
+    });
+
+    document.getElementById("close-modal-btn").addEventListener("click", function () {
+        // 모달과 오버레이 숨기기
+        document.getElementById("spellingModalOverlay").style.display = "none";
+    });
+
+    document.getElementById("apply-correction-btn").addEventListener("click", function () {
+    const diaryId = document.getElementById("check-spelling-btn").dataset.diaryId;
+    const correctedText = document.getElementById("corrected-text").innerText;
+    const url = `/apply-correction/${diaryId}/`;
+
+    // CSRF 토큰 가져오기
+    const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]')?.value ||
+                      document.querySelector('meta[name="csrf-token"]')?.content;
+
+    if (!csrfToken) {
+        alert("CSRF 토큰이 누락되었습니다.");
+        return;
+    }
+
+    fetch(url, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+            "X-CSRFToken": csrfToken,
+        },
+        body: JSON.stringify({ corrected_text: correctedText })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.message) {
+            alert(data.message);
+            // 모달 닫기
+            document.getElementById("spellingModalOverlay").style.display = "none";
+            // 수정된 내용을 화면에 반영
+            document.getElementById("diary-content").innerText = correctedText;
+        } else if (data.error) {
+            alert(data.error);
+        }
+    })
+    .catch(error => {
+        console.error("수정 내용 적용 실패:", error);
+        alert("요청 실패");
+    });
+});
+</script>
 {% endblock %}

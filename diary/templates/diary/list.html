@@ -32,11 +32,12 @@
         border-radius: 5px;
         cursor: pointer;
         text-decoration: none;
-        transition: background-color 0.3s;
+        transition: background-color 0.3s, transform 0.3s;
     }
 
     .btn:hover {
         background-color: #9b5de5;
+        transform: translateY(-2px);
     }
 
     .btn-lg {
@@ -51,25 +52,27 @@
         padding: 8px 16px;
         border-radius: 5px;
         text-decoration: none;
-        transition: background-color 0.3s, color 0.3s;
+        transition: background-color 0.3s, color 0.3s, transform 0.3s;
     }
 
     .btn-outline-secondary:hover {
         background-color: #6f42c1;
         color: #fff;
+        transform: translateY(-2px);
     }
 
     /* 카드 스타일 */
     .card {
         border: 1px solid #e0e0e0;
         border-radius: 10px;
-        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
         overflow: hidden;
-        transition: transform 0.3s ease;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
     }
 
     .card:hover {
-        transform: scale(1.02);
+        transform: scale(1.03);
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
     }
 
     .card-header {
@@ -93,35 +96,115 @@
         background-color: #f9f2ff;
         border: 1px solid #e0cfe6;
     }
+
+    /* 페이징 네비게이션 스타일 */
+    .pagination {
+        display: flex;
+        justify-content: center;
+        margin-top: 20px;
+        padding: 0;
+        list-style: none;
+    }
+
+    .pagination .page-item {
+        margin: 0 5px;
+    }
+
+    .pagination .page-link {
+        color: #6f42c1;
+        border: 1px solid #6f42c1;
+        border-radius: 50%;
+        width: 40px;
+        height: 40px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 14px; /* 기본 글자 크기 */
+        text-decoration: none;
+        transition: background-color 0.3s, color 0.3s, transform 0.3s;
+    }
+
+    .pagination .page-link:hover {
+        background-color: #6f42c1;
+        color: #fff;
+        transform: translateY(-2px);
+    }
+
+    .pagination .page-item.active .page-link {
+        background-color: #6f42c1;
+        color: #fff;
+        border-color: #6f42c1;
+    }
+
+    /* 첫 페이지와 마지막 페이지 링크 스타일 */
+    .pagination .page-link.first-last {
+        font-size: 12px; /* 글씨 크기 줄이기 */
+        padding: 0 5px; /* 텍스트 여백 추가 */
+        border-radius: 15px; /* 더 긴 링크에 맞는 스타일 */
+        width: auto; /* 가로 크기를 자동으로 조정 */
+        height: 30px; /* 세로 크기 조정 */
+    }
 </style>
 
 <div class="container mt-5 mb-5">
     <h1 class="mb-4 text-center">
         <span style="color: #6f42c1; font-weight: bold;">일기 목록</span>
     </h1>
+    <br>
 
-    <!-- 새 일기 작성 버튼 -->
-    <div class="text-end mb-3">
-<!--        <a href="{% url 'diary-create' %}" class="btn btn-lg">-->
-<!--            새 일기 작성-->
-<!--        </a>-->
-    </div>
-
-    {% if diaries %}
-        {% for diary in diaries %}
+    {% if page_obj %}
+        {% for diary in page_obj %}
             <div class="card shadow-sm rounded-3 mb-4">
                 <div class="card-header">
                     <strong>{{ diary.diary_date }} - Mood: {{ diary.get_mood_display }}</strong>
                 </div>
                 <div class="card-body">
                     <h5 class="card-title" style="color: #6f42c1;">{{ diary.summary }}</h5>
+                    <br>
                     <p class="card-text">{{ diary.content|truncatechars:100 }}</p>
+                    <br>
                     <a href="{% url 'diary-read' diary.id %}" class="btn btn-outline-secondary btn-sm mt-2">
                         자세히 보기
                     </a>
                 </div>
             </div>
         {% endfor %}
+
+        <!-- 페이징 네비게이션 -->
+        <nav aria-label="Page navigation">
+            <ul class="pagination">
+                {% if page_obj.has_previous %}
+                    <li class="page-item">
+                        <a class="page-link first-last" href="?page=1">처음</a>
+                    </li>
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ page_obj.previous_page_number }}">←</a>
+                    </li>
+                {% endif %}
+
+                {% for num in page_obj.paginator.page_range %}
+                    {% if page_obj.number == num %}
+                        <li class="page-item active">
+                            <span class="page-link">{{ num }}</span>
+                        </li>
+                    {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ num }}">{{ num }}</a>
+                        </li>
+                    {% endif %}
+                {% endfor %}
+
+                {% if page_obj.has_next %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ page_obj.next_page_number }}">→</a>
+                    </li>
+                    <li class="page-item">
+                        <a class="page-link first-last" href="?page={{ page_obj.paginator.num_pages }}">마지막</a>
+                    </li>
+                {% endif %}
+            </ul>
+        </nav>
+
     {% else %}
         <div class="alert" role="alert">
             아직 작성된 일기가 없습니다. 새 일기를 작성해 보세요!
