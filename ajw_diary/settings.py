@@ -30,7 +30,7 @@ SECRET_KEY = 'django-insecure-cn=p)ia4w)jclwoe4a+u+apbzjr05f1x)rx%quywj&**(tb@6$
 # 프로덕션 환경에서는 안됨
 DEBUG = True
 
-ALLOWED_HOSTS = ["15.152.126.237", "ajwnote.shop"]
+ALLOWED_HOSTS = ["15.152.126.237", "ajwnote.shop", "127.0.0.1"]
 
 
 # Application definition
