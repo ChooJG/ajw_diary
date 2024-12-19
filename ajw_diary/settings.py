@@ -118,7 +118,7 @@ USE_I18N = True
 
 USE_TZ = True
 
-OPENAI_API_KEY = os.getenv('OPENAI_API_KEY')
+OPENAI_API_KEY = "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"
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.1/howto/static-files/
