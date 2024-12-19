@@ -3,87 +3,62 @@
 {% block title %}일기 상세{% endblock %}
 
 {% block content %}
-<div class="diary-detail container mt-4">
+<div class="diary-detail">
     <h1>일기 상세</h1>
-    <div class="card">
-        <div class="card-header d-flex justify-content-between align-items-center">
+    <div>
+        <div>
             <div>
                 <strong>날짜:</strong> {{ diary.diary_date }}
-                <strong class="ms-3">기분:</strong> {{ diary.get_mood_display }}
+                <strong>기분:</strong> {{ diary.get_mood_display }}
             </div>
-            <button id="generate-wordcloud-btn" class="btn btn-sm btn-warning" data-diary-id="{{ diary.id }}">
-                워드클라우드 생성
-            </button>
-            <button id="check-spelling-btn" class="btn btn-sm btn-info" data-diary-id="{{ diary.id }}">
-                오타 확인
-            </button>
+            <button id="check-spelling-btn" data-diary-id="{{ diary.id }}">오타 확인</button>
         </div>
-        <div class="card-body">
-            <h5 class="card-title">{{ diary.summary }}</h5>
-            <p id="diary-content" class="card-text">{{ diary.content }}</p>
+        <div>
+            <h5>{{ diary.summary }}</h5>
+            <p id="diary-content">{{ diary.content }}</p>
 
             {% if diary.image_1 or diary.image_2 or diary.image_3 %}
-            <div class="diary-images mt-3 d-flex flex-wrap">
+            <div class="diary-images">
                 {% if diary.image_1 %}
-                <img src="{{ diary.image_1.url }}" alt="Image 1" class="img-fluid me-2" style="max-width: 200px;">
+                <img src="{{ diary.image_1.url }}" alt="Image 1" style="max-width: 200px;">
                 {% endif %}
                 {% if diary.image_2 %}
-                <img src="{{ diary.image_2.url }}" alt="Image 2" class="img-fluid me-2" style="max-width: 200px;">
+                <img src="{{ diary.image_2.url }}" alt="Image 2" style="max-width: 200px;">
                 {% endif %}
                 {% if diary.image_3 %}
-                <img src="{{ diary.image_3.url }}" alt="Image 3" class="img-fluid" style="max-width: 200px;">
+                <img src="{{ diary.image_3.url }}" alt="Image 3" style="max-width: 200px;">
                 {% endif %}
             </div>
             {% endif %}
         </div>
-        <div class="card-footer">
-            <a href="{% url 'diary-list' %}" class="btn btn-secondary">목록으로</a>
-            <a href="{% url 'diary-delete' diary.id %}" class="btn btn-danger">삭제</a>
+        <div>
+            <a href="{% url 'diary-list' %}">목록으로</a>
+            <a href="{% url 'diary-delete' diary.id %}">삭제</a>
         </div>
     </div>
 
     <!-- 오타 확인 모달 -->
-    <div class="modal fade" id="spellingModal" tabindex="-1">
-        <div class="modal-dialog modal-lg">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">오타 수정 결과</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                </div>
-                <div class="modal-body">
-                    <div class="row">
-                        <div class="col-6">
-                            <h6>원본 텍스트:</h6>
-                            <p id="original-text" class="border p-2"></p>
-                        </div>
-                        <div class="col-6">
-                            <h6>수정된 텍스트:</h6>
-                            <p id="corrected-text" class="border p-2"></p>
-                        </div>
+    <div id="spellingModal">
+        <div>
+            <div>
+                <h5>오타 수정 결과</h5>
+                <button type="button" id="close-modal-btn">닫기</button>
+            </div>
+            <div>
+                <div>
+                    <div>
+                        <h6>원본 텍스트:</h6>
+                        <p id="original-text"></p>
+                    </div>
+                    <div>
+                        <h6>수정된 텍스트:</h6>
+                        <p id="corrected-text"></p>
                     </div>
                 </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">닫기</button>
-                    <button id="apply-correction-btn" type="button" class="btn btn-primary">적용</button>
-                </div>
             </div>
-        </div>
-    </div>
-
-    <!-- 워드클라우드 모달 -->
-    <div class="modal fade" id="wordcloudModal" tabindex="-1">
-        <div class="modal-dialog modal-lg">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">워드클라우드</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                </div>
-                <div class="modal-body text-center">
-                    <img id="wordcloud-image" src="" alt="워드클라우드" class="img-fluid">
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">닫기</button>
-                </div>
+            <div>
+                <button id="close-modal-btn" type="button">닫기</button>
+                <button id="apply-correction-btn" type="button">적용</button>
             </div>
         </div>
     </div>

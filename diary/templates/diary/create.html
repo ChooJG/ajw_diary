@@ -1,68 +1,45 @@
 {% extends 'diary/base.html' %}
 {% load form_helpers %}
-<!DOCTYPE html>
-<html lang="ko">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>새 일기 작성</title>
-</head>
+
+{% block title %}새 일기 작성{% endblock %}
+
 {% block content %}
-<div class="diary-create container mt-5">
-    <h1 class="mb-4">새 일기 작성</h1>
-    <form method="post" enctype="multipart/form-data" class="p-4 border rounded shadow-sm bg-light">
+<div class="diary-create">
+    <h1>새 일기 작성</h1>
+    <form method="post" enctype="multipart/form-data">
         {% csrf_token %}
 
-        <div class="row mb-3">
-            <label for="id_diary_date" class="form-label col-sm-2 col-form-label">날짜</label>
-            <div class="col-sm-10">
-                {{ form.diary_date|add_class:"form-control" }}
-            </div>
+        <div>
+            <label for="id_diary_date">날짜</label>
+            {{ form.diary_date }}
         </div>
 
-        <div class="row mb-3">
-            <label for="id_mood" class="form-label col-sm-2 col-form-label">기분</label>
-            <div class="col-sm-10">
-                {{ form.mood|add_class:"form-select" }}
-            </div>
+        <div>
+            <label for="id_mood">기분</label>
+            {{ form.mood }}
         </div>
 
-        <div class="row mb-3">
-            <label for="id_summary" class="form-label col-sm-2 col-form-label">요약</label>
-            <div class="col-sm-10">
-                {{ form.summary|add_class:"form-control" }}
-            </div>
+        <div>
+            <label for="id_summary">요약</label>
+            {{ form.summary }}
         </div>
 
-        <div class="row mb-3">
-            <label for="id_content" class="form-label col-sm-2 col-form-label">내용</label>
-            <div class="col-sm-10">
-                {{ form.content|add_class:"form-control" }}
-            </div>
+        <div>
+            <label for="id_content">내용</label>
+            {{ form.content }}
         </div>
 
-        <div class="row mb-3">
-            <label class="form-label col-sm-2 col-form-label">이미지 업로드</label>
-            <div class="col-sm-10">
-                <div class="mb-2">
-                    {{ form.image_1|add_class:"form-control" }}
-                </div>
-                <div class="mb-2">
-                    {{ form.image_2|add_class:"form-control" }}
-                </div>
-                <div>
-                    {{ form.image_3|add_class:"form-control" }}
-                </div>
-            </div>
+        <div>
+            <label>이미지 업로드</label>
+            <div>{{ form.image_1 }}</div>
+            <div>{{ form.image_2 }}</div>
+            <div>{{ form.image_3 }}</div>
         </div>
 
-        <div class="row">
-            <div class="col-sm-10 offset-sm-2">
-                <button type="submit" class="btn btn-primary me-2">저장</button>
-                <a href="{% url 'diary-list' %}" class="btn btn-secondary">취소</a>
-            </div>
+        <div>
+            <button type="submit">저장</button>
+            <a href="{% url 'diary-list' %}">취소</a>
         </div>
     </form>
 </div>
 {% endblock %}
-</html>
