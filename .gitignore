@@ -5,3 +5,5 @@ media
 
 venv
 venv/**
+.venv
+.venv/**

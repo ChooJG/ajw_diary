@@ -1,37 +1,10 @@
-<!-- 보라색 두꺼운 선 (양옆 여백 없이 높이를 55px로 수정) -->
-<div style="width: 100%; height: 55px; background-color: #9b30ff; margin: 0; padding: 0;"></div>
+{% extends 'diary/base.html' %}
+{% load static %}
 
-<div style="display: flex; height: 100vh; align-items: center; justify-content: center; font-family: Arial, sans-serif; padding: 50px;">
+{% block title %}AJW의 일기장 - 메인{% endblock %}
 
-    <!-- 왼쪽 검은색 세로선 -->
-    <div style="width: 5px; height: 100px; background-color: #000; margin-right: 20px;"></div>
-
-    <!-- 컨텐츠 영역 유지 -->
-    <div style="text-align: center; max-width: 600px;">
-        <h3 style="color: #6a0dad; font-weight: bold; font-size: 36px;">AJW의 일기장에 오신 것을 환영합니다!</h3>
-        <p style="font-size: 18px; color: #555; line-height: 1.5;">
-            소중한 순간과 기억들을 이곳에 기록하세요.
-        </p>
-
-        <button 
-            onclick="location.href='{% url 'diary-list' %}'" 
-            type="button" 
-            style="
-                background-color: #9b30ff; 
-                border: none; 
-                padding: 15px 30px; 
-                font-weight: bold; 
-                font-size: 20px; 
-                color: #fff; 
-                border-radius: 8px;
-                cursor: pointer;
-                transition: background-color 0.3s ease;
-            "
-            onmouseover="this.style.backgroundColor='#a855f7'" 
-            onmouseout="this.style.backgroundColor='#9b30ff'"
-        >
-            일기작성
-        </button>
-    </div>
-
+{% block content %}
+<div style="display: flex; height: 100%; align-items: center; justify-content: center;">
+    <h1 style="color: #6a0dad; font-size: 64px; font-weight: bold;">daily note</h1>
 </div>
+{% endblock %}
